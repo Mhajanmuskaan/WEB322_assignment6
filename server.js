@@ -1,53 +1,76 @@
 const express = require("express");
-const projectData = require("./modules/projects");
+const projectData = require("./modules/projects"); // Adjust if your project data module path is different.
+const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(express.static("public")); // Serve static files from the "public" folder
+app.use(express.json()); // Middleware to parse JSON request bodies
+
 const studentName = "Muskaan Mahajan";
 const studentId = "165874231";
 
-projectData.initialize().then(() => {
-    console.log("Projects data initialized");
+// Home route: Serves home.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "/views/home.html"));
+});
 
-    app.get("/", (req, res) => {
-        res.send(`Assignment 2: ${studentName} - ${studentId}`);
+// About route: Serves about.html
+app.get("/about", (req, res) => {
+  res.sendFile(path.join(__dirname, "/views/about.html"));
+});
+
+// Solutions/projects route with sector query parameter support
+app.get("/solutions/projects", (req, res) => {
+  const sector = req.query.sector;
+  if (sector) {
+    projectData.getProjectsBySector(sector)
+      .then((projects) => {
+        res.json({ studentName, studentId, timestamp: new Date(), sector, projects });
+      })
+      .catch((error) => {
+        res.status(404).json({ studentName, studentId, timestamp: new Date(), error: error.message });
+      });
+  } else {
+    projectData.getAllProjects()
+      .then((projects) => {
+        res.json({ studentName, studentId, timestamp: new Date(), projects });
+      })
+      .catch((error) => {
+        res.status(404).json({ studentName, studentId, timestamp: new Date(), error: error.message });
+      });
+  }
+});
+
+// Dynamic project route based on project ID
+app.get("/solutions/projects/:id", (req, res) => {
+  const projectId = req.params.id;
+  projectData.getProjectById(projectId)
+    .then((project) => {
+      res.json({ studentName, studentId, timestamp: new Date(), project });
+    })
+    .catch((error) => {
+      res.status(404).json({ studentName, studentId, timestamp: new Date(), error: error.message });
     });
+});
 
-    app.get("/solutions/projects", (req, res) => {
-        projectData.getAllProjects()
-            .then((projects) => {
-                res.json({ studentName, studentId, timestamp: new Date(), projects });
-            })
-            .catch((error) => {
-                res.status(404).send(error);
-            });
-    });
+// POST route at /post-request
+app.post("/post-request", (req, res) => {
+  res.json({
+    studentName,
+    studentId,
+    timestamp: new Date(),
+    requestBody: req.body,
+  });
+});
 
-    app.get("/solutions/projects/id-demo", (req, res) => {
-        projectData.getProjectById(18)
-            .then((project) => {
-                res.json({ studentName, studentId, timestamp: new Date(), project });
-            })
-            .catch((error) => {
-                res.status(404).send(error);
-            });
-    });
+// Custom 404 Error Page
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, "/views/404.html"));
+});
 
-    app.get("/solutions/projects/sector-demo", (req, res) => {
-        projectData.getProjectsBySector("agriculture")
-            .then((projects) => {
-                res.json({ studentName, studentId, timestamp: new Date(), projects });
-            })
-            .catch((error) => {
-                res.status(404).send(error);
-            });
-    });
-
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-
-}).catch((error) => {
-    console.error("Error initializing projects:", error);
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

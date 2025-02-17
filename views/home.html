@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Climate Solutions</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/custom.css">
+  
+</head>
+<body class="bg-neutral text-neutral-content">
+  <!-- Navbar -->
+  <div class="navbar bg-base-300">
+    <div class="flex-1">
+      <a href="/" class="btn btn-ghost normal-case text-2xl">Climate Solutions</a>
+    </div>
+    <div class="flex-none">
+      <ul class="menu menu-horizontal px-1">
+        <li><a href="/about">About</a></li>
+        <li>
+          <details>
+            <summary>Sector</summary>
+            <ul class="p-2 bg-base-100">
+              <li><a href="/solutions/projects?sector=Land Sinks">Land Sinks</a></li>
+              <li><a href="/solutions/projects?sector=Industry">Industry</a></li>
+              <li><a href="/solutions/projects?sector=Transportation">Transportation</a></li>
+            </ul>
+          </details>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <div class="hero min-h-screen bg-base-200">
+    <div class="hero-content text-center">
+      <div class="max-w-lg">
+        <h1 class="text-5xl font-bold">Welcome</h1>
+        <p class="py-6">James Bond - 007007007</p>
+        <p>Browse our current collection of modern solutions to help fight Climate Change.</p>
+        <a href="/solutions/projects" class="btn btn-success mt-4">Get Started Now</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Cards Section -->
+  <div class="container mx-auto my-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Card 1 -->
+      <div class="card bg-base-100 shadow-xl">
+        <figure>
+          <img src="https://drawdown.org/sites/default/files/solutions/solution_farmlandrestoration01.jpg" alt="Abandoned Farmland Restoration">
+        </figure>
+        <div class="card-body">
+          <h2 class="card-title">Abandoned Farmland Restoration</h2>
+          <p>Restoration can bring degraded farmland back into productivity and sequester carbon in the process.</p>
+          <a href="/solutions/projects/1" class="btn btn-success">More Information</a>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card bg-base-100 shadow-xl">
+        <figure>
+          <img src="https://drawdown.org/sites/default/files/solutions2020/solution_alternativecement02.jpg" alt="Alternative Cement">
+        </figure>
+        <div class="card-body">
+          <h2 class="card-title">Alternative Cement</h2>
+          <p>Conventional cement production is a significant source of carbon dioxide.</p>
+          <a href="/solutions/projects/2" class="btn btn-success">More Information</a>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card bg-base-100 shadow-xl">
+        <figure>
+          <img src="https://drawdown.org/sites/default/files/solutions2020/solution_bicycle_infrastructure.jpg" alt="Bicycle Infrastructure">
+        </figure>
+        <div class="card-body">
+          <h2 class="card-title">Bicycle Infrastructure</h2>
+          <p>Infrastructure is essential for supporting safe and abundant bicycle use.</p>
+          <a href="/solutions/projects/3" class="btn btn-success">More Information</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
