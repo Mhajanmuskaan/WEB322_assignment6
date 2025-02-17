@@ -24,6 +24,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.static(path.join(__dirname, "public"))); // Serve static files properly
 app.use(express.json()); // Middleware to parse JSON request bodies
+app.use(express.urlencoded({ extended: true }));
 
 const studentName = "Muskaan Mahajan";
 const studentId = "165874231";
