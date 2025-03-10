@@ -48,29 +48,46 @@ function getAllProjects() {
     });
 }
 
-function getProjectById(projectId) {
+function getProjectsById(id) {
+    console.log("Fetching project with ID:", id);
     return new Promise((resolve, reject) => {
-        const project = projects.find(project => project.id === projectId);
-        if (project) {
-            resolve(project);
-        } else {
-            reject(`Project with ID ${projectId} not found.`);
-        }
+      const project = projects.find((project) => project.id == id);
+      if (project) {
+        resolve(project);
+      } else {
+        reject(`Project with ID ${id} not found.`);
+      }
     });
-}
+  }
+
+
+  
+
+// function getProjectsBySector(sector) {
+//     return new Promise((resolve, reject) => {
+//         const filteredProjects = projects.filter(project => project.sector.toLowerCase().includes(sector.toLowerCase()));
+//         if (filteredProjects.length > 0) {
+//             resolve(filteredProjects);
+//         } else {
+//             reject(`No projects found for sector: ${sector}`);
+//         }
+//     });
+// }
 
 function getProjectsBySector(sector) {
     return new Promise((resolve, reject) => {
-        const filteredProjects = projects.filter(project => project.sector.toLowerCase().includes(sector.toLowerCase()));
-        if (filteredProjects.length > 0) {
-            resolve(filteredProjects);
-        } else {
-            reject(`No projects found for sector: ${sector}`);
-        }
+      const filteredProjects = projects.filter(project => project.sector === sector);
+      
+      if (filteredProjects.length > 0) {
+        resolve(filteredProjects);
+      } else {
+        reject(new Error(`No projects found for sector: ${sector}`)); // ✅ Throw an actual error
+      }
     });
-}
+  }
+  
 
-module.exports = { initialize, getAllProjects, getProjectById, getProjectsBySector };
+module.exports = { initialize, getAllProjects, getProjectsById, getProjectsBySector };
 
 // Testing the functions
 initialize()
@@ -80,11 +97,11 @@ initialize()
     })
     .then(projects => {
         console.log("All Projects:", projects);
-        return getProjectById(9);
+        return getProjectsById(9);
     })
     .then(project => {
         console.log("Project with ID 9:", project);
-        return getProjectsBySector("agriculture");
+        return getProjectsBySector("Agriculture");
     })
     .then(projects => {
         console.log("Projects in Agriculture Sector:", projects);

@@ -1,0 +1,57 @@
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= project.title %> - Climate Solutions</title>
+  
+  <link rel="stylesheet" href="/css/custom1.css">
+</head>
+<body class="bg-base-100">
+  
+  <!-- Include Navbar Partial -->
+  <%- include('partials/navbar', { page: '' }) %>
+
+  <div class="container mx-auto">
+    <div class="hero mb-10 text-center">
+      <div class="hero-content">
+        <div class="max-w-md">
+          <h1 class="text-5xl font-bold text-blue-400"><%= project.title %></h1>
+          <p class="py-6">Below, you will find detailed information about the project.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div>
+        <img src="<%= project.feature_img_url %>" alt="<%= project.title %>" class="rounded-lg shadow-lg" style="max-width: 100%; height: auto;">
+      </div>
+      <div>
+        <h2 class="text-3xl font-bold mb-5">Project Overview</h2>
+        <p class="mb-4"><%= project.intro_short %></p>
+        
+        <h2 class="text-3xl font-bold mt-6 mb-4">Impact</h2>
+        <p class="mb-4"><%= project.impact %></p>
+
+        <!-- More Information Link -->
+        <a href="<%= project.original_source_url %>" class="btn btn-primary" target="_blank">Learn More</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back Button -->
+  <div class="container mx-auto text-center my-10">
+    <a href="#" onclick="history.back(); return false;" class="btn btn-secondary">Go Back</a>
+  </div>
+
+</body>
+</html>

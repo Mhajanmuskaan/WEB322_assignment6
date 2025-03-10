@@ -1,19 +1,3 @@
-/********************************************************************************
-* WEB322 – Assignment 03
-*
-* I declare that this assignment is my own work in accordance with Seneca's
-* Academic Integrity Policy:
-*
-* https://www.senecacollege.ca/about/policies/academic-integrity-policy.html
-*
-* Name: Muskaan Mahajan
-* Student ID: 165874231
-* Date: ___________
-*
-* Published URL: ___________________________________________________________
-*
-********************************************************************************/
-
 const express = require("express");
 const projectData = require("./modules/projects"); // Ensure this path is correct
 const path = require("path");
@@ -21,90 +5,102 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Set EJS as the template engine
+app.set("view engine", "ejs");
+app.set("views", __dirname + "/views");
+
 // Middleware
 app.use(express.static(path.join(__dirname, "public"))); // Serve static files properly
 app.use(express.json()); // Middleware to parse JSON request bodies
- 
 
 const studentName = "Muskaan Mahajan";
 const studentId = "165874231";
 
-// Home Route - Serves home.html
+// Home Route - Renders home.ejs
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "home.html"));
+    res.render("home");
 });
 
-// About Route - Serves about.html
+// About Route - Renders about.ejs
 app.get("/about", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "about.html"));
+    res.render("about");
 });
 
-// Solutions/projects Route with Optional Sector Filtering
+// ✅ Solutions/projects Route with Optional Sector Filtering
 app.get("/solutions/projects", (req, res) => {
-  const sector = req.query.sector;
+  const sector = req.query.sector; // Get sector from query parameter
+
   if (sector) {
     projectData.getProjectsBySector(sector)
       .then((projects) => {
-        res.json({
-          studentName,
-          studentId,
-          timestamp: new Date().toISOString(),
-          sector,
-          projects,
-        });
+        if (projects.length === 0) {
+          return res.status(404).render("404", { 
+            message: `No projects found for the sector: ${sector}`,
+            studentName,
+            studentId,
+            timestamp: new Date().toISOString()
+          });
+        }
+        res.render("projects", { projects, studentName, studentId });
       })
       .catch((error) => {
-        res.status(404).json({
-          studentName,
-          studentId,
-          timestamp: new Date().toISOString(),
-          error: error.message,
+        res.status(404).render("404", { 
+          message: error.message, 
+          studentName, 
+          studentId, 
+          timestamp: new Date().toISOString()
         });
       });
   } else {
     projectData.getAllProjects()
       .then((projects) => {
-        res.json({
-          studentName,
-          studentId,
-          timestamp: new Date().toISOString(),
-          projects,
-        });
+        res.render("projects", { projects, studentName, studentId });
       })
       .catch((error) => {
-        res.status(404).json({
-          studentName,
-          studentId,
-          timestamp: new Date().toISOString(),
-          error: error.message,
+        res.status(404).render("404", { 
+          message: error.message, 
+          studentName, 
+          studentId, 
+          timestamp: new Date().toISOString()
         });
       });
   }
 });
 
-// Dynamic Project ID Route
+
+
+
+
+
+
+// ✅ Dynamic Project ID Route
 app.get("/solutions/projects/:id", (req, res) => {
   const projectId = req.params.id;
-  projectData.getProjectById(projectId)
+
+  projectData.getProjectsById(projectId) // ✅ Make sure the function name is correct
     .then((project) => {
-      res.json({
-        studentName,
-        studentId,
-        timestamp: new Date().toISOString(),
-        project,
-      });
+      if (!project) {
+        return res.status(404).render("404", { 
+          message: `Project with ID ${projectId} not found`, 
+          studentName, 
+          studentId, 
+          timestamp: new Date().toISOString()
+        });
+      }
+      res.render("project", { project, studentName, studentId });
     })
     .catch((error) => {
-      res.status(404).json({
-        studentName,
-        studentId,
-        timestamp: new Date().toISOString(),
-        error: error.message,
+      res.status(404).render("404", { 
+        message: error.message, 
+        studentName, 
+        studentId, 
+        timestamp: new Date().toISOString()
       });
     });
 });
 
-// POST Request Route
+
+// ✅ POST Request Route
 app.post("/post-request", (req, res) => {
   res.json({
     studentName,
@@ -114,12 +110,17 @@ app.post("/post-request", (req, res) => {
   });
 });
 
-// Custom 404 Error Page
+// ✅ Custom 404 Error Page
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+    res.status(404).render("404", { 
+      message: "Page Not Found", 
+      studentName, 
+      studentId, 
+      timestamp: new Date().toISOString()
+    });
 });
 
-// Start Server
+// ✅ Start Server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

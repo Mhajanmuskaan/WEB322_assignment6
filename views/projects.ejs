@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects - Climate Solutions</title>
+
+  <link rel="stylesheet" href="/css/custom1.css">
+</head>
+<body class="bg-base-100">
+  
+  <!-- Include Navbar Partial -->
+  <%- include('partials/navbar', { page: '' }) %> <!-- No active page -->
+
+  
+
+
+
+
+
+
+
+    <div class="container mx-auto text-center mt-10">
+      <h1 class="text-5xl font-bold text-blue-400">Projects</h1>
+      <p class="mt-2 text-lg text-green-300">
+        Browse the current list of Projects in our database. Click the theme to filter by sectors such as:
+      </p>
+    
+      <!-- Generate unique sector buttons dynamically -->
+      <div class="flex justify-center mt-4 gap-3">
+        <% 
+          const uniqueSectors = [...new Set(projects.map(p => p.sector))]; 
+          uniqueSectors.forEach(sector => { 
+        %>
+          <a href="/solutions/projects?sector=<%= encodeURIComponent(sector) %>" 
+             class="bg-green-400 text-black font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-green-500 transition">
+            <%= sector %>
+          </a>
+        <% }); %>
+      </div>
+    </div>
+    
+
+
+    <!-- Projects Table -->
+    <table class="table-auto w-full border-collapse border border-gray-400">
+      <thead>
+        <tr class="bg-gray-300">
+          <th class="border border-gray-400 px-4 py-2">Title</th>
+          <th class="border border-gray-400 px-4 py-2">Sector</th>
+          <th class="border border-gray-400 px-4 py-2">Summary</th>
+          <th class="border border-gray-400 px-4 py-2">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% projects.forEach(project => { %>
+          <tr class="text-center">
+            <td class="border border-gray-400 px-4 py-2"><%= project.title %></td>
+            <td class="border border-gray-400 px-4 py-2">
+              <a href="/solutions/projects?sector=<%= encodeURIComponent(project.sector) %>" class="btn btn-secondary">
+                <%= project.sector %>
+              </a>
+            </td>
+            <td class="border border-gray-400 px-4 py-2"><%= project.summary_short %></td>
+            <td class="border border-gray-400 px-4 py-2">
+              <a href="/solutions/projects/<%= project.id %>" class="btn btn-accent">Details</a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Random Quote Section -->
+  <div class="container mx-auto px-4 mt-10 text-center">
+    <h2 class="text-2xl font-bold mb-4">Inspiration</h2>
+    <blockquote id="quote" class="italic text-lg text-gray-400">Loading...</blockquote>
+    <p id="author" class="mt-2 text-sm text-gray-500"></p>
+  </div>
+
+  <!-- Back Button -->
+  <div class="container mx-auto text-center my-10">
+    <a href="#" onclick="history.back(); return false;" class="btn btn-secondary">Go Back</a>
+  </div>
+
+  <!-- Fetch Random Quote -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch("https://dummyjson.com/quotes/random")
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("quote").innerText = `"${data.quote}"`;
+          document.getElementById("author").innerText = `- ${data.author}`;
+        })
+        .catch(error => console.error("Error fetching quote:", error));
+    });
+  </script>
+
+</body>
+</html>
