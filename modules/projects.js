@@ -129,14 +129,16 @@ function getAllSectors() {
         });
 }
 
-// Add new project
 function addProject(projectData) {
+    delete projectData.id; // ⬅️ This is important to prevent accidental ID submission
+  
     return Project.create(projectData)
-        .then(() => {})
-        .catch((err) => {
-            throw new Error(err.errors[0].message);
-        });
-}
+      .then(() => {})
+      .catch((err) => {
+        throw new Error(err.errors[0].message);
+      });
+  }
+  
 
 // ✅ Edit existing project
 function editProject(id, projectData) {
