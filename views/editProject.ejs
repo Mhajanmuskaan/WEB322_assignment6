@@ -1,0 +1,47 @@
+<<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Project</title>
+  <link rel="stylesheet" href="/css/custom1.css">
+</head>
+<body class="bg-base-100">
+
+  <%- include('partials/navbar', { page: '' }) %>
+
+  <div class="container mx-auto mt-10">
+    <h1 class="text-4xl font-bold text-blue-500">Edit Project: <%= project.title %></h1>
+    <p class="mt-2 mb-6 text-gray-300">Update the form below to edit this project.</p>
+
+    <form action="/solutions/editProject" method="POST" class="space-y-4">
+
+      <!-- Hidden ID field -->
+      <input type="hidden" name="id" value="<%= project.id %>">
+
+      <input type="text" name="title" value="<%= project.title %>" required placeholder="Project Title" />
+      <input type="url" name="feature_img_url" value="<%= project.feature_img_url %>" required placeholder="Feature Image URL" />
+
+      <select name="sector_id" required>
+        <% sectors.forEach(sector => { %>
+          <option value="<%= sector.id %>" <%= (project.sector_id == sector.id) ? 'selected' : '' %>><%= sector.sector_name %></option>
+        <% }) %>
+      </select>
+
+      <textarea name="intro_short" required placeholder="Short Intro"><%= project.intro_short %></textarea>
+      <textarea name="summary_short" required placeholder="Short Summary"><%= project.summary_short %></textarea>
+      <textarea name="impact" required placeholder="Project Impact"><%= project.impact %></textarea>
+
+      <input type="url" name="original_source_url" value="<%= project.original_source_url %>" required placeholder="Original Source URL" />
+
+      <button type="submit" class="btn btn-primary">Update Project</button>
+    </form>
+
+    <!-- ✅ Delete Button -->
+    <div class="mt-6">
+      <a href="/solutions/deleteProject/<%= project.id %>" class="btn btn-error">Delete Project</a>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -12,63 +12,53 @@
   <!-- Include Navbar Partial -->
   <%- include('partials/navbar', { page: '' }) %> <!-- No active page -->
 
-  
+  <div class="container mx-auto text-center mt-10">
+    <h1 class="text-5xl font-bold text-blue-400">Projects</h1>
+    <p class="mt-2 text-lg text-green-300">
+      Browse the current list of Projects in our database. Click the theme to filter by sectors such as:
+    </p>
 
-
-
-
-
-
-
-    <div class="container mx-auto text-center mt-10">
-      <h1 class="text-5xl font-bold text-blue-400">Projects</h1>
-      <p class="mt-2 text-lg text-green-300">
-        Browse the current list of Projects in our database. Click the theme to filter by sectors such as:
-      </p>
-    
-      <!-- Generate unique sector buttons dynamically -->
-      <div class="flex justify-center mt-4 gap-3">
-        <% 
-          const uniqueSectors = [...new Set(projects.map(p => p.sector))]; 
-          uniqueSectors.forEach(sector => { 
-        %>
-          <a href="/solutions/projects?sector=<%= encodeURIComponent(sector) %>" 
-             class="bg-green-400 text-black font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-green-500 transition">
-            <%= sector %>
-          </a>
-        <% }); %>
-      </div>
+    <!-- Generate unique sector buttons dynamically -->
+    <div class="flex justify-center mt-4 gap-3">
+      <% 
+        const uniqueSectors = [...new Set(projects.map(p => p.Sector.sector_name))]; 
+        uniqueSectors.forEach(sector => { 
+      %>
+        <a href="/solutions/projects?sector=<%= encodeURIComponent(sector) %>" 
+           class="bg-green-400 text-black font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-green-500 transition">
+          <%= sector %>
+        </a>
+      <% }); %>
     </div>
-    
+  </div>
 
-
-    <!-- Projects Table -->
-    <table class="table-auto w-full border-collapse border border-gray-400">
-      <thead>
-        <tr class="bg-gray-300">
-          <th class="border border-gray-400 px-4 py-2">Title</th>
-          <th class="border border-gray-400 px-4 py-2">Sector</th>
-          <th class="border border-gray-400 px-4 py-2">Summary</th>
-          <th class="border border-gray-400 px-4 py-2">Details</th>
+  <!-- Projects Table -->
+  <table class="table-auto w-full border-collapse border border-gray-400">
+    <thead>
+      <tr class="bg-gray-300">
+        <th class="border border-gray-400 px-4 py-2">Title</th>
+        <th class="border border-gray-400 px-4 py-2">Sector</th>
+        <th class="border border-gray-400 px-4 py-2">Summary</th>
+        <th class="border border-gray-400 px-4 py-2">Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% projects.forEach(project => { %>
+        <tr class="text-center">
+          <td class="border border-gray-400 px-4 py-2"><%= project.title %></td>
+          <td class="border border-gray-400 px-4 py-2">
+            <a href="/solutions/projects?sector=<%= encodeURIComponent(project.Sector.sector_name) %>" class="btn btn-secondary">
+              <%= project.Sector.sector_name %>
+            </a>
+          </td>
+          <td class="border border-gray-400 px-4 py-2"><%= project.summary_short %></td>
+          <td class="border border-gray-400 px-4 py-2">
+            <a href="/solutions/projects/<%= project.id %>" class="btn btn-accent">Details</a>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        <% projects.forEach(project => { %>
-          <tr class="text-center">
-            <td class="border border-gray-400 px-4 py-2"><%= project.title %></td>
-            <td class="border border-gray-400 px-4 py-2">
-              <a href="/solutions/projects?sector=<%= encodeURIComponent(project.sector) %>" class="btn btn-secondary">
-                <%= project.sector %>
-              </a>
-            </td>
-            <td class="border border-gray-400 px-4 py-2"><%= project.summary_short %></td>
-            <td class="border border-gray-400 px-4 py-2">
-              <a href="/solutions/projects/<%= project.id %>" class="btn btn-accent">Details</a>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
+      <% }) %>
+    </tbody>
+  </table>
   </div>
 
   <!-- Random Quote Section -->

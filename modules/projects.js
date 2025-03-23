@@ -6,106 +6,165 @@
 *
 * https://www.senecapolytechnic.ca/about/policies/academic-integrity-policy.html
 *
-* Name: _muskaan mahajan  Student ID: 165874231  Date: 01-02-2025
+* Name: Muskaan Mahajan  Student ID: 165874231  Date: 01-02-2025
 *
 ********************************************************************************/
 
+require('dotenv').config();
+require('pg');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
+// Initialize Sequelize
+const sequelize = new Sequelize(
+    process.env.PGDATABASE,
+    process.env.PGUSER,
+    process.env.PGPASSWORD,
+    {
+        host: process.env.PGHOST,
+        dialect: 'postgres',
+        dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
+            }
+        }
+    }
+);
 
+// Define Sector model
+const Sector = sequelize.define('Sector', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    sector_name: Sequelize.STRING
+}, {
+    timestamps: false
+});
 
+// Define Project model
+const Project = sequelize.define('Project', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    title: Sequelize.STRING,
+    feature_img_url: Sequelize.STRING,
+    summary_short: Sequelize.TEXT,
+    intro_short: Sequelize.TEXT,
+    impact: Sequelize.TEXT,
+    original_source_url: Sequelize.STRING,
+    sector_id: Sequelize.INTEGER
+}, {
+    timestamps: false
+});
 
+Project.belongsTo(Sector, { foreignKey: 'sector_id' });
 
-
-const projectData = require("../data/projectData");
-const sectorData = require("../data/sectorData");
-
-let projects = [];
-
+// Initialize DB
 function initialize() {
-    return new Promise((resolve, reject) => {
-        try {
-            projects = projectData.map(project => {
-                const sector = sectorData.find(sector => sector.id === project.sector_id);
-                return {
-                    ...project,
-                    sector: sector ? sector.sector_name : "Unknown"
-                };
-            });
-            resolve();
-        } catch (error) {
-            reject("Initialization failed: " + error);
-        }
-    });
+    return sequelize.sync()
+        .then(() => {
+            console.log("Sequelize connected and synced.");
+        })
+        .catch((err) => {
+            console.error("Sequelize sync error:", err);
+            throw err;
+        });
 }
 
+// Get all projects
 function getAllProjects() {
-    return new Promise((resolve, reject) => {
+    return Project.findAll({ include: Sector })
+        .then((projects) => {
+            if (projects.length > 0) {
+                return projects;
+            } else {
+                throw new Error("No projects available.");
+            }
+        });
+}
+
+// Get project by ID
+function getProjectsById(id) {
+    return Project.findAll({
+        where: { id: id },
+        include: [Sector]
+    }).then((projects) => {
         if (projects.length > 0) {
-            resolve(projects);
+            return projects[0];
         } else {
-            reject("No projects available.");
+            throw new Error("Unable to find requested project");
         }
     });
 }
 
-function getProjectsById(id) {
-    console.log("Fetching project with ID:", id);
-    return new Promise((resolve, reject) => {
-      const project = projects.find((project) => project.id == id);
-      if (project) {
-        resolve(project);
-      } else {
-        reject(`Project with ID ${id} not found.`);
-      }
-    });
-  }
-
-
-  
-
-// function getProjectsBySector(sector) {
-//     return new Promise((resolve, reject) => {
-//         const filteredProjects = projects.filter(project => project.sector.toLowerCase().includes(sector.toLowerCase()));
-//         if (filteredProjects.length > 0) {
-//             resolve(filteredProjects);
-//         } else {
-//             reject(`No projects found for sector: ${sector}`);
-//         }
-//     });
-// }
-
+// Get projects by sector name
 function getProjectsBySector(sector) {
-    return new Promise((resolve, reject) => {
-      const filteredProjects = projects.filter(project => project.sector === sector);
-      
-      if (filteredProjects.length > 0) {
-        resolve(filteredProjects);
-      } else {
-        reject(new Error(`No projects found for sector: ${sector}`)); // ✅ Throw an actual error
-      }
+    return Project.findAll({
+        include: [Sector],
+        where: {
+            '$Sector.sector_name$': {
+                [Op.iLike]: `%${sector}%`
+            }
+        }
+    }).then((projects) => {
+        if (projects.length > 0) {
+            return projects;
+        } else {
+            throw new Error("Unable to find requested projects");
+        }
     });
+}
+
+// Get all sectors
+function getAllSectors() {
+    return Sector.findAll()
+        .then((sectors) => sectors)
+        .catch((err) => {
+            throw new Error("Unable to retrieve sectors");
+        });
+}
+
+// Add new project
+function addProject(projectData) {
+    return Project.create(projectData)
+        .then(() => {})
+        .catch((err) => {
+            throw new Error(err.errors[0].message);
+        });
+}
+
+// ✅ Edit existing project
+function editProject(id, projectData) {
+    return Project.update(projectData, { where: { id: id } })
+      .then(() => {})
+      .catch(err => {
+        throw new Error(err.errors[0].message);
+      });
   }
   
 
-module.exports = { initialize, getAllProjects, getProjectsById, getProjectsBySector };
+// ✅ Delete existing project
+function deleteProject(id) {
+    return Project.destroy({ where: { id: id } })
+        .then(() => {})
+        .catch(err => {
+            throw new Error(err.errors ? err.errors[0].message : "Failed to delete project");
+        });
+}
 
-// Testing the functions
-initialize()
-    .then(() => {
-        console.log("Initialization complete.");
-        return getAllProjects();
-    })
-    .then(projects => {
-        console.log("All Projects:", projects);
-        return getProjectsById(9);
-    })
-    .then(project => {
-        console.log("Project with ID 9:", project);
-        return getProjectsBySector("Agriculture");
-    })
-    .then(projects => {
-        console.log("Projects in Agriculture Sector:", projects);
-    })
-    .catch(error => {
-        console.error("Error:", error);
-    });
+// Export all functions
+module.exports = {
+    initialize,
+    getAllProjects,
+    getProjectsById,
+    getProjectsBySector,
+    getAllSectors,
+    addProject,
+    editProject,
+    deleteProject // ✅ Included here
+};
