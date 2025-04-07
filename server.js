@@ -354,12 +354,14 @@ app.use((req, res) => {
 // });
 
 // ✅ Connect to MongoDB Atlas
-mongoose.connect("mongodb+srv://mhajanmuskaan1:6tKqUdLNq37hnYwV@cluster0.e1phf09.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
- useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+mongoose.connect(process.env.MONGODB)
 .then(() => {
-  console.log(" Connected to MongoDB Atlas");
+  console.log("✅ Connected to MongoDB Atlas");
+})
+.catch((err) => {
+  console.error("❌ MongoDB connection error:", err);
+});
+
 
   // ✅ Start Server After DB Initialization
   projectService.initialize()
