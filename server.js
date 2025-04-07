@@ -28,6 +28,19 @@ app.use(clientSessions({
   activeDuration: 1000 * 60 // extend by 1 minute if user is active
 }));
 
+// ✅ Start Server After DB Initialization
+projectService.initialize()
+.then(authData.initialize)
+.then(() => {
+  app.listen(HTTP_PORT, () => {
+    console.log(`Server is running on http://localhost:${HTTP_PORT}`);
+  });
+})
+.catch((err) => {
+  console.error("Unable to start server:", err);
+});
+
+
 //  Make session object available in all EJS views
 app.use((req, res, next) => {
   res.locals.session = req.session;
@@ -353,29 +366,7 @@ app.use((req, res) => {
 //     });
 // });
 
-// ✅ Connect to MongoDB Atlas
-mongoose.connect(process.env.MONGODB)
-.then(() => {
-  console.log("✅ Connected to MongoDB Atlas");
-})
-.catch((err) => {
-  console.error("❌ MongoDB connection error:", err);
-});
 
 
-  // ✅ Start Server After DB Initialization
-  projectService.initialize()
-  .then(authData.initialize)
-  .then(() => {
-    app.listen(HTTP_PORT, () => {
-      console.log(`Server is running on http://localhost:${HTTP_PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("Unable to start server:", err);
-  });
 
-})
-.catch((err) => {
-  console.error("MongoDB connection error:", err);
-});
+  
