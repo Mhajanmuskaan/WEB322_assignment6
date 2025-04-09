@@ -291,6 +291,29 @@ app.get("/register", (req, res) => {
     userName: ""
   });
 });
+app.post("/login", (req, res) => {
+  req.body.userAgent = req.get('User-Agent');
+
+  authData.checkUser(req.body)
+    .then((user) => {
+      req.session.user = {
+        userName: user.userName,
+        email: user.email,
+        loginHistory: user.loginHistory
+      };
+
+      console.log("✅ Logged in user session:", req.session); // <-- ADD THIS
+
+      res.redirect("/solutions/projects");
+    })
+    .catch((err) => {
+      res.render("login", {
+        errorMessage: err,
+        userName: req.body.userName
+      });
+    });
+});
+
 
 // ✅ POST /register
 app.post("/register", (req, res) => {
@@ -311,26 +334,8 @@ app.post("/register", (req, res) => {
     });
 });
 
-// ✅ POST /login
-app.post("/login", (req, res) => {
-  req.body.userAgent = req.get('User-Agent');
 
-  authData.checkUser(req.body)
-    .then((user) => {
-      req.session.user = {
-        userName: user.userName,
-        email: user.email,
-        loginHistory: user.loginHistory
-      };
-      res.redirect("/solutions/projects");
-    })
-    .catch((err) => {
-      res.render("login", {
-        errorMessage: err,
-        userName: req.body.userName
-      });
-    });
-});
+
 
 // ✅ GET /logout
 app.get("/logout", (req, res) => {
@@ -340,6 +345,7 @@ app.get("/logout", (req, res) => {
 
 // ✅ GET /userHistory (Protected)
 app.get("/userHistory", ensureLogin, (req, res) => {
+  
   res.render("userHistory");
 });
 
